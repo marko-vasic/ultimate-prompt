@@ -8,7 +8,7 @@
 
 ## What is an Ultimate Prompt?
 
-An **Ultimate Prompt** is a prompt that, with high likelihood, would lead to the creation of the current codebase in one go when given to an AI coding agent such as Jetski.
+An **Ultimate Prompt** is a prompt that, with high likelihood, would lead to the creation of the current codebase in one go when given to an AI coding agent.
 
 In other words, it is the minimal yet sufficiently detailed set of instructions such that an agent — starting from an empty workspace — could produce the existing code, architecture, and configuration of this project as its output.
 
@@ -29,7 +29,7 @@ The ultimate prompt is discovered through an iterative refinement process. **Ste
                       │
                       ▼
          ┌────────────────────────┐
-         │  Jetski Agent          │
+         │  AI Agent               │
          │  (produces codebase    │
          │   from prompt)         │
          └───────────┬────────────┘
@@ -81,7 +81,7 @@ The ultimate prompt is discovered through an iterative refinement process. **Ste
 
 0. **Initial Prompt Generation (Step 0)**: Before the loop begins, an initial ultimate prompt (`v[0]`) is generated from the existing codebase. See [Creating the Initial Prompt](#creating-the-initial-prompt) below for detailed instructions.
 
-1. **Prompt → Jetski**: The current iteration of the ultimate prompt (`v[i]`) is given to a Jetski agent, which works in a clean workspace to produce the codebase from scratch based solely on the prompt.
+1. **Prompt → AI Agent**: The current iteration of the ultimate prompt (`v[i]`) is given to an AI agent, which works in a clean workspace to produce the codebase from scratch based solely on the prompt.
 
 2. **Judge — Verification**: Once Jetski finishes, a **judge** evaluates the produced codebase against the original using two methods:
    - **LLM Verification**: An LLM compares the produced code against the original for semantic correctness, architectural alignment, and completeness.
@@ -137,27 +137,21 @@ ULTIMATE_PROMPT_v0.md          # The initial ultimate prompt
 ULTIMATE_PROMPT_TESTS_v0.go    # Equivalence test suite
 ```
 
-## Step 1: Prompt → Jetski Execution
+## Step 1: Prompt → AI Agent Execution
 
-The current ultimate prompt (`v[i]`) is given to a fresh Jetski agent session to produce the codebase from scratch.
+The current ultimate prompt (`v[i]`) is given to a fresh AI agent session to produce the codebase from scratch.
 
 ### Process
 
-1. **Create a new CitC client**: Open a fresh workspace (e.g., `hgd -f ultimate_prompt_v[i]`). This workspace starts with all of head, including the original codebase.
+1. **Create a fresh workspace**: Prepare a clean, empty directory (e.g., `mkdir fresh_workspace`) to serve as the environment for the agent. This ensures the agent starts with no existing source files from the project.
 
-2. **Delete the target directory**: Remove the original codebase from the workspace so the agent cannot read it directly:
-   ```bash
-   hg rm TARGET_DIR
-   ```
-   After this, the files no longer exist in the agent's workspace — it must recreate them from scratch.
+2. **Provide the prompt**: Give the agent the full contents of `ULTIMATE_PROMPT_v[i].md` as its task. Instruct it to generate the codebase based solely on the prompt.
 
-3. **Provide the prompt**: Give the agent the full contents of `ULTIMATE_PROMPT_v[i].md` as its task. Instruct it to regenerate the deleted directory based solely on the prompt.
+3. **Let the agent work autonomously**: The AI agent reads the prompt and produces all source files, configuration, build files, and any other artifacts specified in the prompt. No human intervention.
 
-4. **Let the agent work autonomously**: The Jetski agent reads the prompt and produces all source files, configuration, BUILD files, and any other artifacts specified in the prompt. No human intervention.
+4. **Capture the output**: Once the agent signals completion (or times out), the workspace contains the produced codebase for this iteration.
 
-5. **Capture the output**: Once the agent signals completion (or times out), the workspace contains the produced codebase for this iteration.
-
-> **Note**: The agent still has access to code search (which indexes head), so it could theoretically look up the deleted files. However, since the files are absent from its workspace and the prompt does not reference them by path, this is a reasonable level of isolation. The prompt should include an instruction not to search for or reference the original implementation.
+> **Note**: The agent still has access to its internal knowledge and any search tools it might have. The prompt should include a clear instruction not to search for or reference the original implementation from any external sources or existing indexed versions of the codebase if available.
 
 ### Output
 
@@ -180,11 +174,11 @@ The judge evaluates the produced codebase against the original. It uses two comp
 
 ### Code Execution Verification
 
-1. **Build**: Run `blaze build` on the produced codebase in the workspace. Record whether it succeeds or fails, and capture any build errors.
+1. **Build**: Run the project's build command (e.g., `go build`, `npm run build`, `make`) on the produced codebase in the workspace. Record whether it succeeds or fails, and capture any build errors.
 
-2. **Run equivalence tests**: Run the equivalence test suite (`ULTIMATE_PROMPT_TESTS_v[i].go`) in the workspace with `blaze test`. The tests exist in the same CitC workspace alongside the produced code — no copying is needed. These tests were designed in Step 0 specifically to verify behavioral equivalence.
+2. **Run equivalence tests**: Run the equivalence test suite (e.g., `ULTIMATE_PROMPT_TESTS_v[i].go`) in the workspace. These tests were designed in Step 0 specifically to verify behavioral equivalence.
 
-3. **Run any existing tests**: If the produced codebase includes its own tests, run those as well and record results.
+3. **Run existing tests**: If the produced codebase includes its own tests (e.g., `go test`, `npm test`), run those as well and record results.
 
 ### Output
 
@@ -271,7 +265,7 @@ The loop terminates when one of the following conditions is met.
 
 The process has **converged** when the diff report shows:
 - All files are present and assessed as ✅ **Equivalent**.
-- `blaze build` succeeds.
+- Build command succeeds.
 - All equivalence tests pass.
 
 When converged, the final prompt is the **ultimate prompt** for this codebase.
