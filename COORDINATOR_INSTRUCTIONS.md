@@ -15,7 +15,7 @@ You work alongside a **Generator** worker. The Generator receives an Ultimate Pr
 
 | Variable | Value |
 |----------|-------|
-| `TARGET_DIR` | `` |
+| `TARGET_DIR` | `working_dir/ripgrep` |
 
 ## Prerequisites
 

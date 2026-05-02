@@ -11,6 +11,12 @@ All paths in this document are relative to `BASE_DIR` — the root of this repos
 | `BASE_DIR` | Root of this repository (absolute path) | *(set before running)* |
 | `TARGET_DIR` | Path to the cloned target project | `${BASE_DIR}/working_dir/ripgrep` |
 
+Before running any commands, export `BASE_DIR`:
+
+```bash
+export BASE_DIR=/absolute/path/to/this/repo
+```
+
 ## Target Project
 
 | Field | Value |
@@ -43,6 +49,13 @@ The following must be available on the system before proceeding:
   source "$HOME/.cargo/env"
   ```
   The `-y` flag accepts defaults without prompting. After install, re-verify with the commands above.
+
+---
+
+> **Note**: If you installed Rust in the step above, all subsequent shell sessions must source the Cargo environment before `rustc` or `cargo` will be available:
+> ```bash
+> source "$HOME/.cargo/env"
+> ```
 
 ---
 
@@ -112,7 +125,6 @@ working_dir/ripgrep
 
 ```
 ${BASE_DIR}/
-├── ULTIMATE_PROMPT_INSTRUCTIONS.md   # Original reference
 ├── COORDINATOR_INSTRUCTIONS.md       # Coordinator worker
 ├── GENERATOR_INSTRUCTIONS.md         # Generator worker
 ├── benchmarks/
