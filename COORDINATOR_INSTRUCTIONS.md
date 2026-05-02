@@ -129,12 +129,59 @@ The initial ultimate prompt (`v[0]`) is bootstrapped from the existing codebase.
 
 6. **Include build and test expectations**: Specify which build targets should succeed and which tests should pass, so the judge has clear acceptance criteria.
 
-7. **Generate verification criteria & equivalence tests**: Produce a test suite that you deem sufficient and necessary to verify equivalence between the produced codebase and the original. These tests serve as the ground-truth acceptance criteria for judging and should cover:
-   - Core functionality and business logic
-   - API contracts and interface compliance
-   - Configuration parsing and validation
-   - Error handling and edge cases
-   - Integration points between components
+7. **Generate verification criteria & equivalence tests**: Produce a test suite that verifies behavioral equivalence between the produced codebase and the original. These tests are the ground-truth acceptance criteria for judging.
+
+   **Key principle**: Equivalence tests must be **implementation-agnostic**. The generated codebase may have a completely different internal structure, file layout, variable names, or abstractions. Tests must verify **observable behavior** — what the program does — not how it's built.
+
+   ##### 7a. Mine the existing test suite
+
+   Most non-trivial projects already have tests. These are the single best source of behavioral specifications. Analyze the existing tests as follows:
+
+   1. **Identify the test directory/files**: Find all test files in the target project. Read through them to understand the testing patterns used.
+
+   2. **Classify each test by type**:
+      - **Black-box / integration tests** (invokes the built binary or public API, asserts on output): These are directly usable as equivalence tests — they already test observable behavior.
+      - **White-box / unit tests** (tests internal functions, private APIs, internal data structures): These cannot be reused directly. Extract the *behavioral intent* — what user-visible behavior does this internal logic support? — and write a black-box equivalent.
+      - **Test harness / utilities** (helper functions, fixtures, macros): Understand these so you can interpret what the tests actually assert, but do not carry them over.
+
+   3. **Extract the behavioral specification from each test**: For each test, identify:
+      - **Inputs**: What files, arguments, flags, environment variables, or stdin does it set up?
+      - **Action**: What command or API call is invoked?
+      - **Expected output**: What stdout, stderr, exit code, or side effects does it assert?
+
+   ##### 7b. Translate to standalone equivalence tests
+
+   Convert the mined behavioral specifications into a **standalone test suite** that can run against any implementation — not just the original. Follow these rules:
+
+   1. **Tests must invoke the built artifact directly** (e.g., run the compiled binary by path, call the public CLI, hit the HTTP endpoint). Do not depend on the target project's internal test framework, macros, or harness code.
+
+   2. **Tests must be self-contained**: Each test should create its own fixtures (temp files, input data), run the command, and assert on the output. No shared mutable state between tests.
+
+   3. **Do not copy test code verbatim**: The original tests may use project-specific helpers, macros, or assertion utilities. Rewrite each test in a clean form that expresses the same behavioral contract without depending on the original project's code.
+
+   4. **Do not hardcode implementation details**: Avoid asserting on internal error message strings, specific file paths within the project, or internal log output — unless these are part of the documented public interface.
+
+   5. **Choose an appropriate test format**: Use whatever language or framework is most natural for black-box testing of the target project's public interface. For CLI tools, shell scripts or a scripting language work well. For libraries, use the language's standard test framework against the public API only.
+
+   ##### 7c. Fill coverage gaps
+
+   The existing test suite may not cover everything needed for equivalence verification. After mining the existing tests, assess coverage gaps:
+
+   - **Core functionality and business logic**: Are the primary use cases tested?
+   - **CLI/API surface**: Are all major flags, options, and subcommands exercised?
+   - **Configuration and environment**: Are config files, environment variables, and precedence rules tested?
+   - **Error handling and edge cases**: Are invalid inputs, missing files, permission errors, etc. tested?
+   - **Output formats**: If the project supports multiple output formats (e.g., JSON, plain text), are they all tested?
+   - **Integration points**: Are interactions between major components tested end-to-end?
+
+   Write additional equivalence tests to cover any gaps.
+
+   ##### 7d. Organize the test suite
+
+   Structure the equivalence test suite so it is easy to run and interpret:
+   - Group tests by feature area or behavioral category.
+   - Each test should have a descriptive name indicating what behavior it verifies.
+   - Include a top-level runner script or instructions for how to execute the full suite against a given build artifact path.
 
 #### Post-Creation Prompt Review (Step 0.5)
 
@@ -153,8 +200,10 @@ Step 0 produces two files, saved alongside this file:
 
 ```
 ULTIMATE_PROMPT_v0.md          # The initial ultimate prompt
-ULTIMATE_PROMPT_TESTS_v0.go    # Equivalence test suite
+ULTIMATE_PROMPT_TESTS_v0/      # Equivalence test suite (directory)
 ```
+
+The test suite directory should contain the test files and a runner script. The format and language of the tests depend on the target project (e.g., shell scripts for CLI tools, test files in the project's language for libraries).
 
 ---
 
@@ -189,7 +238,7 @@ Once the Generator returns the produced codebase, you evaluate it against the or
 
 1. **Build**: Run the project's build command (e.g., `go build`, `npm run build`, `make`) on the produced codebase in the workspace. Record whether it succeeds or fails, and capture any build errors.
 
-2. **Run equivalence tests**: Run the equivalence test suite (e.g., `ULTIMATE_PROMPT_TESTS_v[i].go`) in the workspace. These tests were designed in Step 0 specifically to verify behavioral equivalence.
+2. **Run equivalence tests**: Run the equivalence test suite (`ULTIMATE_PROMPT_TESTS_v[i]/`) against the produced build artifact. These tests were designed in Step 0 specifically to verify behavioral equivalence. They must run against the produced codebase without modification — if a test requires changes to work with the produced code's internal structure, it was not a proper equivalence test.
 
 3. **Run existing tests**: If the produced codebase includes its own tests (e.g., `go test`, `npm test`), run those as well and record results.
 
@@ -276,7 +325,7 @@ Use the diff report's critique and learnings to produce the next iteration of th
 #### Output
 
 - `ULTIMATE_PROMPT_v[i+1].md` — the refined prompt for the next iteration.
-- `ULTIMATE_PROMPT_TESTS_v[i+1].go` — updated equivalence tests (if changed, otherwise carry forward).
+- `ULTIMATE_PROMPT_TESTS_v[i+1]/` — updated equivalence tests (if changed, otherwise carry forward).
 
 ---
 
@@ -303,7 +352,7 @@ If 10 iterations have been completed without convergence, the loop stops. The ou
 
 ```
 ULTIMATE_PROMPT_FINAL.md       # The converged (or best) ultimate prompt
-ULTIMATE_PROMPT_TESTS_FINAL.go # The final equivalence test suite
+ULTIMATE_PROMPT_TESTS_FINAL/   # The final equivalence test suite
 DIFF_REPORT_v[last].md        # The final diff report
 ```
 
