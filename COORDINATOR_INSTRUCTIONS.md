@@ -17,6 +17,16 @@ You work alongside a **Generator** worker. The Generator receives an Ultimate Pr
 |----------|-------|
 | `TARGET_DIR` | `` |
 
+## Prerequisites
+
+Before starting the refinement loop, the target project must be cloned and buildable locally. Follow the setup instructions for your target project in the [benchmarks/](./benchmarks/) directory (e.g., [ripgrep.md](./benchmarks/ripgrep.md)) to:
+
+1. Clone the target repository
+2. Build the project
+3. Run its test suite to confirm a healthy baseline
+
+Once setup is complete, set `TARGET_DIR` above to the path of the cloned project.
+
 ## What is an Ultimate Prompt?
 
 An **Ultimate Prompt** is a prompt that, with high likelihood, would lead to the creation of the current codebase in one go when given to an AI coding agent.
