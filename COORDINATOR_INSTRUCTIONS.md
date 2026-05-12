@@ -15,11 +15,12 @@ You work alongside a **Generator** worker. The Generator receives an Ultimate Pr
 
 | Variable | Value |
 |----------|-------|
+| `BENCHMARK_DIR` | `benchmarks/ripgrep` |
 | `TARGET_DIR` | `working_dir/ripgrep` |
 
 ## Prerequisites
 
-Before starting the refinement loop, the target project must be cloned and buildable locally. Follow the setup instructions for your target project in the [benchmarks/](./benchmarks/) directory (e.g., [ripgrep.md](./benchmarks/ripgrep.md)) to:
+Before starting the refinement loop, the target project must be cloned and buildable locally. Follow the setup instructions for your target project in its benchmark directory (e.g., [setup_instructions.md](./benchmarks/ripgrep/setup_instructions.md)) to:
 
 1. Clone the target repository
 2. Build the project
@@ -197,14 +198,14 @@ After generating `ULTIMATE_PROMPT_v[i].md`, run a review pass:
 
 #### Output
 
-Step 0 produces two files, saved alongside this file:
+Step 0 produces the following, saved in the benchmark directory (`BENCHMARK_DIR`):
 
 ```
-ULTIMATE_PROMPT_v0.md          # The initial ultimate prompt
-ULTIMATE_PROMPT_TESTS_v0/      # Equivalence test suite (directory)
+BENCHMARK_DIR/iteration_0/prompt.md   # The initial ultimate prompt
+BENCHMARK_DIR/tests/                  # Equivalence test suite (directory)
 ```
 
-The test suite directory should contain the test files and a runner script. The format and language of the tests depend on the target project (e.g., shell scripts for CLI tools, test files in the project's language for libraries).
+The test suite directory should contain the test files and a runner script. The format and language of the tests depend on the target project (e.g., shell scripts for CLI tools, test files in the project's language for libraries). Tests live at the benchmark level (not per-iteration) since they typically stay fixed across iterations.
 
 ---
 
@@ -239,7 +240,7 @@ Once the Generator returns the produced codebase, you evaluate it against the or
 
 1. **Build**: Run the project's build command (e.g., `go build`, `npm run build`, `make`) on the produced codebase in the workspace. Record whether it succeeds or fails, and capture any build errors.
 
-2. **Run equivalence tests**: Run the equivalence test suite (`ULTIMATE_PROMPT_TESTS_v[i]/`) against the produced build artifact. These tests were designed in Step 0 specifically to verify behavioral equivalence. They must run against the produced codebase without modification — if a test requires changes to work with the produced code's internal structure, it was not a proper equivalence test.
+2. **Run equivalence tests**: Run the equivalence test suite (`BENCHMARK_DIR/tests/`) against the produced build artifact. These tests were designed in Step 0 specifically to verify behavioral equivalence. They must run against the produced codebase without modification — if a test requires changes to work with the produced code's internal structure, it was not a proper equivalence test.
 
 3. **Run existing tests**: If the produced codebase includes its own tests (e.g., `go test`, `npm test`), run those as well and record results.
 
@@ -298,7 +299,7 @@ Synthesize the verification results into a single, actionable diff report with a
 
 #### Output
 
-- `DIFF_REPORT_v[i].md` — saved alongside this file.
+- `BENCHMARK_DIR/iteration_[i]/diff_report.md`
 
 ---
 
@@ -325,8 +326,8 @@ Use the diff report's critique and learnings to produce the next iteration of th
 
 #### Output
 
-- `ULTIMATE_PROMPT_v[i+1].md` — the refined prompt for the next iteration.
-- `ULTIMATE_PROMPT_TESTS_v[i+1]/` — updated equivalence tests (if changed, otherwise carry forward).
+- `BENCHMARK_DIR/iteration_[i+1]/prompt.md` — the refined prompt for the next iteration.
+- `BENCHMARK_DIR/tests/` — updated if needed (otherwise carried forward as-is).
 
 ---
 
@@ -352,9 +353,9 @@ If 10 iterations have been completed without convergence, the loop stops. The ou
 #### Final Output
 
 ```
-ULTIMATE_PROMPT_FINAL.md       # The converged (or best) ultimate prompt
-ULTIMATE_PROMPT_TESTS_FINAL/   # The final equivalence test suite
-DIFF_REPORT_v[last].md        # The final diff report
+BENCHMARK_DIR/final/prompt.md        # The converged (or best) ultimate prompt
+BENCHMARK_DIR/tests/                 # The final equivalence test suite
+BENCHMARK_DIR/final/diff_report.md   # The final diff report
 ```
 
 ---
