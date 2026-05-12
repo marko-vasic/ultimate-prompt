@@ -193,6 +193,7 @@ After generating `ULTIMATE_PROMPT_v[i].md`, run a review pass:
    - Internal comments or doc strings
 2. Strip or generalize flagged content.
 3. The prompt should pass the test: "Could a competent engineer produce a *functionally equivalent* but *structurally different* implementation from this prompt?" If the prompt over-constrains the structure, it's too revealing.
+4. **Run the equivalence test suite against the original codebase**: Execute the full test suite against the original build artifact to confirm all tests pass. If any tests fail, they must be fixed before proceeding — a test that doesn't pass on the original implementation cannot be used to judge a generated one.
 
 #### Output
 
@@ -207,7 +208,7 @@ The test suite directory should contain the test files and a runner script. The 
 
 ---
 
-### Dispatching to the Generator
+### Step 1: Dispatching to the Generator
 
 Once the ultimate prompt candidate `v[i]` is ready, hand it to the **Generator** worker. Provide:
 
