@@ -17,6 +17,7 @@ You work alongside a **Generator** worker. The Generator receives an Ultimate Pr
 |----------|-------|
 | `BENCHMARK_DIR` | `benchmarks/ripgrep` |
 | `TARGET_DIR` | `working_dir/ripgrep` |
+| `HANDOFF_DIR` | `/cns/oz-d/home/vasic/ultimate-prompt/ripgrep/handoff` |
 
 ## Prerequisites
 
@@ -211,19 +212,57 @@ The test suite directory should contain the test files and a runner script. The 
 
 ### Step 1: Dispatching to the Generator
 
-Once the ultimate prompt candidate `v[i]` is ready, hand it to the **Generator** worker. Provide:
+Once the ultimate prompt candidate `v[i]` is ready, hand it off to the Generator via the shared handoff directory on CNS.
 
-1. The full contents of `ULTIMATE_PROMPT_v[i].md` as the task prompt.
-2. A clear instruction that the Generator must work in a clean, empty workspace.
-3. A clear instruction that the Generator must not search for or reference the original implementation.
+#### Handoff Protocol
 
-Wait for the Generator to signal completion and return the produced codebase.
+The Coordinator and Generator communicate through a single shared directory (`HANDOFF_DIR`) on CNS. The directory contains a `STATE` file whose contents represent the current phase of the handoff. The lifecycle for each iteration is:
+
+```
+EMPTY ──→ READY ──→ PROCESSING ──→ COMPLETED ──→ (archive & cleanup) ──→ EMPTY
+          Coord      Generator      Generator      Coordinator
+```
+
+#### Dispatch Procedure
+
+1. **Ensure the handoff directory is clean**: The directory should be empty (or not exist) before starting. If it contains artifacts from a previous iteration, something went wrong — investigate before proceeding.
+
+2. **Write the prompt**: Copy the current prompt candidate to `HANDOFF_DIR/prompt.md`. This file must contain **only the prompt** — no metadata, no iteration numbers, no test suites, no diff reports. The Generator must not be able to infer anything about the iteration history.
+
+3. **Signal readiness**: Write `READY` to `HANDOFF_DIR/STATE`. This tells the Generator that a task is available.
+
+4. **Wait for completion**: Poll `HANDOFF_DIR/STATE` until its contents change to `COMPLETED` (or `FAILED`). Do not modify anything in the handoff directory while the Generator is working.
+
+#### Handoff Directory Layout
+
+After the Generator completes, the handoff directory will contain:
+
+```
+HANDOFF_DIR/
+├── STATE          # "COMPLETED" (or "FAILED")
+├── prompt.md      # The prompt (written by Coordinator)
+└── workspace/     # The produced codebase (written by Generator)
+```
+
+#### Receiving Results
+
+1. **Read `STATE`**: If `COMPLETED`, proceed to judging. If `FAILED`, inspect the handoff directory for error information and decide whether to retry or refine the prompt.
+
+2. **Archive**: Copy the contents of the handoff directory to the iteration's archive directory:
+   - `HANDOFF_DIR/prompt.md` → `BENCHMARK_DIR/iteration_[i]/prompt.md`
+   - `HANDOFF_DIR/workspace/` → `BENCHMARK_DIR/iteration_[i]/implementation/`
+
+3. **Clean up**: Delete the contents of `HANDOFF_DIR` (or the directory itself) to reset for the next iteration.
+
+4. **Proceed to judging**: Evaluate the archived implementation as described in Step 2.
+
+> **Critical rule**: Never place tests, diff reports, learnings, or any file other than `prompt.md` and `STATE` into the handoff directory. The Generator must see only the prompt.
 
 ---
 
 ### Step 2: Judge — Verification
 
-Once the Generator returns the produced codebase, you evaluate it against the original using two complementary verification methods.
+Once the produced codebase has been archived from the handoff directory (Step 1), evaluate it against the original using two complementary verification methods.
 
 #### LLM Verification
 
