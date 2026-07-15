@@ -1,2 +1,6 @@
 # Cloned target projects
 working_dir/
+
+# Python bytecode
+__pycache__/
+*.pyc
