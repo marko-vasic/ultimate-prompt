@@ -1,0 +1,16 @@
+[package]
+name = "grep-printer"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Output formatting for grep-like tools"
+
+[dependencies]
+bstr = { workspace = true }
+grep-cli = { workspace = true }
+grep-matcher = { workspace = true }
+grep-searcher = { workspace = true }
+log = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+termcolor = { workspace = true }

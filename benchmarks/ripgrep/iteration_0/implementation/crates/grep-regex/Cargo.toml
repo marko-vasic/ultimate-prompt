@@ -1,0 +1,13 @@
+[package]
+name = "grep-regex"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Default regex engine for grep-like tools using regex-automata"
+
+[dependencies]
+grep-matcher = { workspace = true }
+log = { workspace = true }
+regex-automata = { workspace = true }
+regex-syntax = { workspace = true }
+bstr = { workspace = true }

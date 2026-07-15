@@ -1,0 +1,14 @@
+[package]
+name = "grep-searcher"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Search orchestration for grep-like tools"
+
+[dependencies]
+bstr = { workspace = true }
+grep-matcher = { workspace = true }
+encoding_rs = "0.8"
+encoding_rs_io = "0.1"
+log = { workspace = true }
+memmap2 = "0.9"

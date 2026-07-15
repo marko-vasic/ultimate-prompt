@@ -1,0 +1,61 @@
+[workspace]
+members = [
+    "crates/globset",
+    "crates/grep-cli",
+    "crates/grep-matcher",
+    "crates/grep-printer",
+    "crates/grep-regex",
+    "crates/grep-searcher",
+    "crates/ignore",
+]
+resolver = "3"
+
+[workspace.dependencies]
+bstr = "1.11"
+globset = { path = "crates/globset" }
+grep-cli = { path = "crates/grep-cli" }
+grep-matcher = { path = "crates/grep-matcher" }
+grep-printer = { path = "crates/grep-printer" }
+grep-regex = { path = "crates/grep-regex" }
+grep-searcher = { path = "crates/grep-searcher" }
+ignore = { path = "crates/ignore" }
+log = "0.4"
+regex-automata = "0.4"
+regex-syntax = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+termcolor = "1.4"
+
+[package]
+name = "ripgrep"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+default-run = "rg"
+
+[[bin]]
+name = "rg"
+path = "src/main.rs"
+
+[dependencies]
+bstr = { workspace = true }
+globset = { workspace = true }
+grep-cli = { workspace = true }
+grep-matcher = { workspace = true }
+grep-printer = { workspace = true }
+grep-regex = { workspace = true }
+grep-searcher = { workspace = true }
+ignore = { workspace = true }
+lexopt = "0.3"
+log = { workspace = true }
+env_logger = "0.11"
+serde_json = { workspace = true }
+termcolor = { workspace = true }
+
+[features]
+pcre2 = []
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+strip = "symbols"

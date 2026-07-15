@@ -1,0 +1,14 @@
+[package]
+name = "ignore"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Fast recursive directory traversal with gitignore support"
+
+[dependencies]
+bstr = { workspace = true }
+crossbeam-deque = "0.8"
+globset = { workspace = true }
+log = { workspace = true }
+same-file = "1.0"
+walkdir = "2"

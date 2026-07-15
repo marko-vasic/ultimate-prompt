@@ -1,0 +1,13 @@
+[package]
+name = "globset"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Cross-platform glob matching"
+
+[dependencies]
+bstr = { workspace = true }
+fnv = "1.0"
+log = { workspace = true }
+regex-automata = { workspace = true }
+regex-syntax = { workspace = true }
