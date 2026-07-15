@@ -15,13 +15,13 @@ You work alongside a **Generator** worker. The Generator receives an Ultimate Pr
 
 | Variable | Value |
 |----------|-------|
-| `BENCHMARK_DIR` | `benchmarks/ripgrep` |
-| `TARGET_DIR` | `working_dir/ripgrep` |
-| `HANDOFF_DIR` | `/cns/oz-d/home/vasic/ultimate-prompt/ripgrep/handoff` |
+| `BENCHMARK_DIR` | `benchmarks/black` |
+| `TARGET_DIR` | `working_dir/black` |
+| `HANDOFF_DIR` | `/cns/oz-d/home/vasic/ultimate-prompt/black/handoff` |
 
 ## Prerequisites
 
-Before starting the refinement loop, the target project must be cloned and buildable locally. Follow the setup instructions for your target project in its benchmark directory (e.g., [setup_instructions.md](./benchmarks/ripgrep/setup_instructions.md)) to:
+Before starting the refinement loop, the target project must be cloned and buildable locally. Follow the setup instructions for your target project in its benchmark directory (e.g., for riprep it's in [setup_instructions.md](./benchmarks/ripgrep/setup_instructions.md)) to:
 
 1. Clone the target repository
 2. Build the project
@@ -125,17 +125,23 @@ The initial ultimate prompt (`v[0]`) is bootstrapped from the existing codebase.
    - Protocol/API contracts
    - Edge cases and invariants
 
-4. **Document file structure**: List every file that should be produced, with a brief description of its purpose.
+4. **Understand file structure** (internal analysis only): Catalog every file in the codebase and understand its role. This helps you identify the full scope of functionality. **Do not include this file listing in the prompt** — the agent should determine its own file structure. Instead, use this understanding to ensure the prompt's behavioral specification covers all the functionality these files implement.
 
-5. **Specify behavior, not implementation**: The prompt should describe *what* the code does and *why*, not *how* line-by-line. The agent should be free to arrive at the implementation details on its own — the test is whether it converges on an equivalent result.
+5. **Specify behavior, not implementation**: The prompt should describe *what* the code does and *why*, not *how* line-by-line. The agent should be free to arrive at the implementation details on its own — the test is whether it converges on an equivalent result. Specifically, the prompt must NOT include:
+   - File names, directory structure, or package layout
+   - Internal class/function/module names (unless they are part of the public API)
+   - Specific libraries or frameworks used for internal purposes (unless they are user-facing, e.g., a config file format like `pyproject.toml` that users interact with is fine to include)
+   - The prompt SHOULD describe logical components as *responsibilities and behaviors*, not as files. Think "the system needs a component that does X" not "there should be a file called X.py that does Y."
 
-6. **Include build and test expectations**: Specify which build targets should succeed and which tests should pass, so the judge has clear acceptance criteria.
+6. **Translate structure into behavior**: For each file or module you cataloged in step 4, ask: "What user-visible behavior or capability does this implement?" Write that behavior into the prompt. If a file implements purely internal plumbing (e.g., bracket tracking, AST utilities), describe the *behavioral need* it serves (e.g., "the formatter must correctly handle nested brackets and split lines at appropriate bracket depths") rather than naming the internal module.
 
-7. **Generate verification criteria & equivalence tests**: Produce a test suite that verifies behavioral equivalence between the produced codebase and the original. These tests are the ground-truth acceptance criteria for judging.
+7. **Include build and test expectations**: Specify which build targets should succeed and which tests should pass, so the judge has clear acceptance criteria.
+
+8. **Generate verification criteria & equivalence tests**: Produce a test suite that verifies behavioral equivalence between the produced codebase and the original. These tests are the ground-truth acceptance criteria for judging.
 
    **Key principle**: Equivalence tests must be **implementation-agnostic**. The generated codebase may have a completely different internal structure, file layout, variable names, or abstractions. Tests must verify **observable behavior** — what the program does — not how it's built.
 
-   ##### 7a. Mine the existing test suite
+   ##### 8a. Mine the existing test suite
 
    Most non-trivial projects already have tests. These are the single best source of behavioral specifications. Analyze the existing tests as follows:
 
@@ -151,7 +157,7 @@ The initial ultimate prompt (`v[0]`) is bootstrapped from the existing codebase.
       - **Action**: What command or API call is invoked?
       - **Expected output**: What stdout, stderr, exit code, or side effects does it assert?
 
-   ##### 7b. Translate to standalone equivalence tests
+   ##### 8b. Translate to standalone equivalence tests
 
    Convert the mined behavioral specifications into a **standalone test suite** that can run against any implementation — not just the original. Follow these rules:
 
@@ -165,7 +171,7 @@ The initial ultimate prompt (`v[0]`) is bootstrapped from the existing codebase.
 
    5. **Choose an appropriate test format**: Use whatever language or framework is most natural for black-box testing of the target project's public interface. For CLI tools, shell scripts or a scripting language work well. For libraries, use the language's standard test framework against the public API only.
 
-   ##### 7c. Fill coverage gaps
+   ##### 8c. Fill coverage gaps
 
    The existing test suite may not cover everything needed for equivalence verification. After mining the existing tests, assess coverage gaps:
 
@@ -178,7 +184,7 @@ The initial ultimate prompt (`v[0]`) is bootstrapped from the existing codebase.
 
    Write additional equivalence tests to cover any gaps.
 
-   ##### 7d. Organize the test suite
+   ##### 8d. Organize the test suite
 
    Structure the equivalence test suite so it is easy to run and interpret:
    - Group tests by feature area or behavioral category.
@@ -405,6 +411,6 @@ This section captures observations and lessons learned during the ultimate promp
 
 ### 1. Prompt should not be too revealing (2026-03-23)
 
-**Observation**: The v0 prompt included a file manifest with exact line counts (e.g., `kernel.go | ~120 | Kernel struct, AddGoal, Wake`). This is *too revealing* — it leaks implementation-level detail about the expected size of each file, which biases the agent toward matching a specific implementation rather than producing correct behavior. The ultimate prompt should specify **what** a file does, not **how big** it is. More generally, implementation details can leak unintentionally (line counts, exact variable names, internal comments, etc.).
+**Observation**: The v0 prompt included a file manifest with exact line counts (e.g., `kernel.go | ~120 | Kernel struct, AddGoal, Wake`) and, more broadly, a complete list of files with their internal responsibilities. Both are *too revealing* — they leak implementation-level detail about the expected structure, which biases the agent toward matching a specific implementation rather than producing correct behavior. The file listing is useful as an *analysis step* for the Coordinator to understand the codebase's full scope, but it should not appear in the prompt. The ultimate prompt should specify **what** the system does, not **how it's decomposed into files**. More generally, implementation details can leak unintentionally (line counts, exact variable names, file names, directory layout, internal class names, internal comments, etc.).
 
-**Action**: Remove line counts from the file manifest in subsequent prompt versions. Keep only the file path and a brief purpose description.
+**Action**: The file structure analysis (Step 0, Point 4) is internal working material. The prompt should describe logical components as behavioral responsibilities, not as a file manifest. Remove file names, internal class names, and directory structure from prompts.
