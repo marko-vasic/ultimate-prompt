@@ -1,6 +1,14 @@
 # Prompt Author Instructions
 
-You are the **Prompt Author** — the component responsible for creating the initial Ultimate Prompt candidate from an existing codebase. You run once, at the start of the refinement loop (iteration 0), to bootstrap the process.
+## Background
+
+An **Ultimate Prompt** is a prompt that, with high likelihood, would lead to the creation of a target codebase in one go when given to an AI coding agent. It is the minimal yet sufficiently detailed set of instructions such that an agent — starting from an empty workspace — could produce the existing code, architecture, and configuration of a project as its output.
+
+The Ultimate Prompt is discovered through an **iterative refinement loop**: a prompt candidate is given to an AI agent which produces code, the code is compared against the original, and the prompt is refined based on what diverged. This loop repeats until the generated code matches the original.
+
+## Your Role
+
+You are the **Prompt Author** — you create the initial Ultimate Prompt candidate from an existing codebase. You run once, at the start of the loop (iteration 0), to bootstrap the process.
 
 Your prompt will be given to an AI coding agent that produces a complete codebase from it — starting from an empty workspace, with no access to the original code. Your equivalence tests will be used to verify whether the generated code is behaviorally equivalent to the original.
 
@@ -10,12 +18,6 @@ Your prompt will be given to an AI coding agent that produces a complete codebas
 |----------|-------|
 | `BENCHMARK_DIR` | `benchmarks/black` |
 | `TARGET_DIR` | `working_dir/black` |
-
-## What is an Ultimate Prompt?
-
-An **Ultimate Prompt** is a prompt that, with high likelihood, would lead to the creation of the current codebase in one go when given to an AI coding agent.
-
-In other words, it is the minimal yet sufficiently detailed set of instructions such that an agent — starting from an empty workspace — could produce the existing code, architecture, and configuration of this project as its output.
 
 ---
 
