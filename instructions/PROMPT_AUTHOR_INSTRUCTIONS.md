@@ -2,9 +2,9 @@
 
 ## Background
 
-An **Ultimate Prompt** is a prompt that, with high likelihood, would lead to the creation of a target codebase in one go when given to an AI coding agent. It is the minimal yet sufficiently detailed set of instructions such that an agent — starting from an empty workspace — could produce the existing code, architecture, and configuration of a project as its output.
+The goal is to create a prompt — called an **Ultimate Prompt** — that can instruct an AI coding agent to reproduce a target codebase from scratch. The agent will work in an empty workspace with no access to the original code. The prompt is its **sole input**. If the prompt is too vague, the agent will produce the wrong code. If it's too detailed (e.g., leaking file names or internal structure), it biases the agent toward mimicking rather than understanding.
 
-The Ultimate Prompt is discovered through an **iterative refinement loop**: a prompt candidate is given to an AI agent which produces code, the code is compared against the original, and the prompt is refined based on what diverged. This loop repeats until the generated code matches the original.
+The prompt you create will be tested: an AI agent will generate code from it, and the result will be compared against the original. If the code diverges, the prompt gets refined and the cycle repeats. Your job is to make the initial prompt good enough to minimize the number of refinement cycles needed.
 
 ## Your Role
 
