@@ -1,4 +1,16 @@
-# Coordinator Instructions
+> [!WARNING]
+> **DEPRECATED** — This file has been superseded by the four-component split:
+> - [ORCHESTRATOR_INSTRUCTIONS.md](./ORCHESTRATOR_INSTRUCTIONS.md) — Loop control, handoff, sequencing
+> - [PROMPT_AUTHOR_INSTRUCTIONS.md](./PROMPT_AUTHOR_INSTRUCTIONS.md) — Initial prompt & test creation (iteration 0)
+> - [GENERATOR_INSTRUCTIONS.md](./GENERATOR_INSTRUCTIONS.md) — Code generation from prompt (unchanged)
+> - [VERIFIER_CRITIC_INSTRUCTIONS.md](./VERIFIER_CRITIC_INSTRUCTIONS.md) — Evaluation & critique
+> - [PROMPT_REFINER_INSTRUCTIONS.md](./PROMPT_REFINER_INSTRUCTIONS.md) — Prompt refinement from critique (iteration 1+)
+>
+> Learnings have been moved to [LEARNINGS.md](./LEARNINGS.md).
+>
+> This file is retained for historical reference only.
+
+# Coordinator Instructions (DEPRECATED)
 
 You are the **Coordinator** — the orchestrator of the Ultimate Prompt iterative refinement loop. You are responsible for:
 
