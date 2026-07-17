@@ -4,3 +4,10 @@ working_dir/
 # Python bytecode
 __pycache__/
 *.pyc
+
+# Cargo build artifacts
+target/
+
+# Python virtualenvs
+.venv/
+.venv_test/
