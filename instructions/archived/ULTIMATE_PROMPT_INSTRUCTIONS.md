@@ -1,14 +1,15 @@
-> [!WARNING]
-> **DEPRECATED** — This was an earlier monolithic version of the process. It has been superseded by:
-> - [ORCHESTRATOR_INSTRUCTIONS.md](./ORCHESTRATOR_INSTRUCTIONS.md) — Loop control, handoff, sequencing
-> - [PROMPT_AUTHOR_INSTRUCTIONS.md](./PROMPT_AUTHOR_INSTRUCTIONS.md) — Initial prompt & test creation
-> - [GENERATOR_INSTRUCTIONS.md](./GENERATOR_INSTRUCTIONS.md) — Code generation from prompt
-> - [VERIFIER_CRITIC_INSTRUCTIONS.md](./VERIFIER_CRITIC_INSTRUCTIONS.md) — Evaluation & critique
-> - [PROMPT_REFINER_INSTRUCTIONS.md](./PROMPT_REFINER_INSTRUCTIONS.md) — Prompt refinement from critique
+> [!NOTE]
+> **ARCHIVED (v1 Architecture)** — This was the initial monolithic version of the Ultimate Prompt process.
+> It was later superseded by [COORDINATOR_INSTRUCTIONS.md](./COORDINATOR_INSTRUCTIONS.md) (v2) and the modern 4-component architecture (v3):
+> - [ORCHESTRATOR_INSTRUCTIONS.md](../ORCHESTRATOR_INSTRUCTIONS.md) — Loop control, handoff, sequencing
+> - [PROMPT_AUTHOR_INSTRUCTIONS.md](../PROMPT_AUTHOR_INSTRUCTIONS.md) — Initial prompt & test creation
+> - [GENERATOR_INSTRUCTIONS.md](../GENERATOR_INSTRUCTIONS.md) — Code generation from prompt
+> - [VERIFIER_CRITIC_INSTRUCTIONS.md](../VERIFIER_CRITIC_INSTRUCTIONS.md) — Evaluation & critique
+> - [PROMPT_REFINER_INSTRUCTIONS.md](../PROMPT_REFINER_INSTRUCTIONS.md) — Prompt refinement from critique
 >
-> This file is retained for historical reference only.
+> This file is retained for historical reference only. See [README.md](./README.md) for full lineage.
 
-# Ultimate Prompt Instructions (DEPRECATED)
+# Ultimate Prompt Instructions (ARCHIVED — v1)
 
 ## Configuration
 
