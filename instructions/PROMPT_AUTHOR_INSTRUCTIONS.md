@@ -135,6 +135,7 @@ Structure the equivalence test suite so it is easy to run and interpret:
 After generating the prompt, run a review pass:
 
 1. Flag any content that specifies implementation detail rather than behavior:
+   - File names, directory structures, crate names, or package layout
    - Exact line counts or file sizes
    - Exact internal variable/field names (unless they are part of the public API or interface)
    - Copy-pasted code snippets from the original implementation

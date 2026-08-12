@@ -53,7 +53,7 @@ Use the diff report's critique and learnings to produce the next iteration of th
    - **Add missing context** where the agent lacked information to make the right choice.
    - **Clarify ambiguous instructions** where the agent made a reasonable but wrong interpretation.
    - **Remove over-specification** where unnecessary detail led the agent astray.
-   - **Maintain minimality** — do not over-correct by adding line-by-line descriptions. The prompt should remain design-doc-level.
+   - **Maintain minimality and structural independence** — do not over-correct by adding line-by-line descriptions, file trees, directory structures, or crate/package layouts. Even if the critique notes missing files or crate structure differences, express requirements strictly as logical behaviors and capabilities, allowing the agent to determine its own file and package structure.
 
 ---
 
@@ -62,6 +62,7 @@ Use the diff report's critique and learnings to produce the next iteration of th
 After generating the refined prompt, run the same review pass that applies to any Ultimate Prompt:
 
 1. Flag any content that specifies implementation detail rather than behavior:
+   - File names, directory structures, crate names, or package layout
    - Exact line counts or file sizes
    - Exact internal variable/field names (unless they are part of the public API or interface)
    - Copy-pasted code snippets from the original implementation
