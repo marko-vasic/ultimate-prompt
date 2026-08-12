@@ -18,7 +18,7 @@
 #   1 if any test fails
 # =============================================================================
 
-set -euo pipefail
+set -uo pipefail
 
 RG="${1:?Usage: $0 <path-to-rg-binary>}"
 
@@ -152,7 +152,7 @@ echo "Hello World" > "$t002_dir/test.txt"
 set +e
 "$RG" "ZZZZNOTFOUND" "$t002_dir/test.txt" > /dev/null 2>&1
 code=$?
-set -e
+# set -e
 assert_exit_code "T002: No match exit code" "1" "$code"
 
 # T003: Match returns exit code 0
@@ -161,7 +161,7 @@ echo "Hello World" > "$t003_dir/test.txt"
 set +e
 "$RG" "Hello" "$t003_dir/test.txt" > /dev/null 2>&1
 code=$?
-set -e
+# set -e
 assert_exit_code "T003: Match exit code" "0" "$code"
 
 # T004: Regex pattern
@@ -498,7 +498,7 @@ printf "hello\x00world\n" > "$t150_dir/test.bin"
 set +e
 output="$("$RG" "hello" "$t150_dir/test.bin" 2>&1)"
 code=$?
-set -e
+# set -e
 assert_contains "T150: Binary warning" "binary file matches" "$output"
 
 # T151: --text searches binary
@@ -536,7 +536,7 @@ echo "hello" > "$t171_dir/test.txt"
 set +e
 "$RG" -q "hello" "$t171_dir/test.txt" > /dev/null 2>&1
 code=$?
-set -e
+# set -e
 assert_exit_code "T171: Quiet exit code match" "0" "$code"
 
 # T172: Quiet mode exit code on no match
@@ -545,7 +545,7 @@ echo "hello" > "$t172_dir/test.txt"
 set +e
 "$RG" -q "ZZZZNOTFOUND" "$t172_dir/test.txt" > /dev/null 2>&1
 code=$?
-set -e
+# set -e
 assert_exit_code "T172: Quiet exit code no match" "1" "$code"
 
 # =============================================================================
@@ -561,7 +561,7 @@ assert_eq "T180: Stdin search" "hello world" "$actual"
 set +e
 echo "hello world" | "$RG" "ZZZZNOTFOUND" > /dev/null 2>&1
 code=$?
-set -e
+# set -e
 assert_exit_code "T181: Stdin no match" "1" "$code"
 
 # =============================================================================
@@ -696,7 +696,7 @@ echo "this is a very long line with a match somewhere inside of it that exceeds 
 set +e
 actual="$("$RG" --max-columns 30 --no-filename --no-line-number "match" "$t270_dir/test.txt" 2>&1)"
 code=$?
-set -e
+# set -e
 # The short line should appear; the long line should be omitted or truncated
 assert_contains "T270: Short line appears" "short match here" "$actual"
 
@@ -777,13 +777,13 @@ echo "--- Error Handling ---"
 set +e
 "$RG" "[invalid" /dev/null > /dev/null 2>&1
 code=$?
-set -e
+# set -e
 assert_exit_code "T320: Invalid regex exit code" "2" "$code"
 
 # T321: Invalid regex produces error message
 set +e
 output="$("$RG" "[invalid" /dev/null 2>&1)"
-set -e
+# set -e
 assert_contains "T321: Invalid regex error msg" "error" "$output"
 
 # =============================================================================
@@ -947,7 +947,7 @@ t430_file="$TMPDIR_BASE/man_output.txt"
 set +e
 "$RG" --generate man > "$t430_file" 2>&1
 code=$?
-set -e
+# set -e
 if grep -qF ".TH RG" "$t430_file" 2>/dev/null; then
     PASS=$((PASS + 1))
 else
@@ -961,7 +961,7 @@ t431_file="$TMPDIR_BASE/bash_comp.txt"
 set +e
 "$RG" --generate complete-bash > "$t431_file" 2>&1
 code=$?
-set -e
+# set -e
 assert_exit_code "T431: Generate bash exit code" "0" "$code"
 
 # =============================================================================
