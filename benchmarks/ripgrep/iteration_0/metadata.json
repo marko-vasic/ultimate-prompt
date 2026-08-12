@@ -1,0 +1,53 @@
+{
+  "benchmark": "ripgrep",
+  "iteration": 0,
+  "commit_hash": null,
+  "created_at": "2026-07-14T20:35:00Z",
+  "completed_at": "2026-07-20T13:52:00Z",
+  "status": "COMPLETED",
+  "notes": "Run 1 suffered test leakage (contaminated monolithic implementation). Run 2 was executed cleanly without test leakage to produce the baseline diff report.",
+  
+  "components": {
+    "prompt_author": {
+      "model": "claude-opus-4-6",
+      "model_provider": "anthropic",
+      "parameters": null,
+      "timestamps": null,
+      "usage": null
+    },
+    "prompt_refiner": null,
+    "generator": {
+      "model": "claude-opus-4-6",
+      "model_provider": "anthropic",
+      "parameters": null,
+      "timestamps": null,
+      "usage": null
+    },
+    "verifier_critic": {
+      "model": "gemini-3.7-flash-preview",
+      "model_provider": "google",
+      "parameters": null,
+      "timestamps": null,
+      "usage": null
+    }
+  },
+  
+  "results": {
+    "build": {
+      "status": "PASS",
+      "warnings_count": 8,
+      "build_time_seconds": null
+    },
+    "equivalence_tests": {
+      "passed": 70,
+      "failed": 19,
+      "total": 89,
+      "pass_rate_pct": 78.65
+    },
+    "generated_code_metrics": {
+      "total_lines_of_code": null,
+      "source_files_count": null,
+      "crates_or_modules_count": null
+    }
+  }
+}

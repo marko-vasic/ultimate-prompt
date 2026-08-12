@@ -105,29 +105,128 @@ The ultimate prompt is discovered through an iterative refinement process. The *
 
 ### Iteration 0: Bootstrap
 
-1. **Invoke the Prompt Author**: The Prompt Author reads the original codebase and produces:
+1. **Initialize metadata**: Create `BENCHMARK_DIR/iteration_0/metadata.json` (see [Metadata Specification](#metadata-specification-metadatajson)) recording the benchmark name, iteration `0`, current git commit hash, and start timestamp.
+
+2. **Invoke the Prompt Author**: The Prompt Author reads the original codebase and produces:
    - `BENCHMARK_DIR/iteration_0/prompt.md` — the initial prompt
    - `BENCHMARK_DIR/tests/` — the equivalence test suite
+   - Record `prompt_author` component metadata (model, parameters, timestamps, token usage if available) in `metadata.json`.
 
-2. **Dispatch to the Generator**: Hand off `prompt.md` to the Generator via the handoff protocol (see below).
+3. **Dispatch to the Generator**: Hand off `prompt.md` to the Generator via the handoff protocol (see below).
 
-3. **Receive generated codebase**: Archive the Generator's output to `BENCHMARK_DIR/iteration_0/implementation/`.
+4. **Receive generated codebase**: Archive the Generator's output to `BENCHMARK_DIR/iteration_0/implementation/`. Record `generator` metadata in `metadata.json`.
 
-4. **Invoke the Verifier + Critic**: The Verifier + Critic evaluates the generated codebase and produces `BENCHMARK_DIR/iteration_0/diff_report.md`.
+5. **Invoke the Verifier + Critic**: The Verifier + Critic evaluates the generated codebase and produces `BENCHMARK_DIR/iteration_0/diff_report.md`.
+   - Record `verifier_critic` metadata and test/build `results` metrics in `metadata.json`.
 
-5. **Check termination**: If converged, stop. Otherwise, proceed to iteration 1.
+6. **Check termination**: If converged, stop. Otherwise, proceed to iteration 1.
 
 ### Iteration i (i ≥ 1): Refine
 
-1. **Invoke the Prompt Refiner**: The Prompt Refiner reads the previous critique and prompt, and produces `BENCHMARK_DIR/iteration_[i]/prompt.md`.
+1. **Initialize metadata**: Create `BENCHMARK_DIR/iteration_[i]/metadata.json` (see [Metadata Specification](#metadata-specification-metadatajson)) recording benchmark, iteration `i`, commit hash, and start timestamp.
 
-2. **Dispatch to the Generator**: Hand off the refined prompt via the handoff protocol.
+2. **Invoke the Prompt Refiner**: The Prompt Refiner reads the previous critique and prompt, and produces `BENCHMARK_DIR/iteration_[i]/prompt.md`.
+   - Record `prompt_refiner` component metadata in `metadata.json`.
 
-3. **Receive generated codebase**: Archive to `BENCHMARK_DIR/iteration_[i]/implementation/`.
+3. **Dispatch to the Generator**: Hand off the refined prompt via the handoff protocol.
 
-4. **Invoke the Verifier + Critic**: Produces `BENCHMARK_DIR/iteration_[i]/diff_report.md`.
+4. **Receive generated codebase**: Archive to `BENCHMARK_DIR/iteration_[i]/implementation/`. Record `generator` metadata in `metadata.json`.
 
-5. **Check termination**: If converged or `i >= 10`, stop. Otherwise, proceed to iteration `i + 1`.
+5. **Invoke the Verifier + Critic**: Produces `BENCHMARK_DIR/iteration_[i]/diff_report.md`.
+   - Record `verifier_critic` metadata and test/build `results` metrics in `metadata.json`.
+
+6. **Check termination**: If converged or `i >= 10`, stop. Otherwise, proceed to iteration `i + 1`.
+
+---
+
+## Metadata Specification (`metadata.json`)
+
+Each iteration archive directory must contain a `metadata.json` file providing complete provenance for the models, parameters, token usage, timestamps, and execution results of that iteration.
+
+### Field Definitions
+
+| Section | Field | Type | Description |
+| :--- | :--- | :--- | :--- |
+| **Top-Level** | `benchmark` | string | Target benchmark project name (e.g. `ripgrep`, `black`) |
+| | `iteration` | integer | Iteration index (`0`, `1`, `2`, ...) |
+| | `commit_hash` | string | Git commit hash of `ultimate-prompt` repository at execution time |
+| | `created_at` | ISO 8601 string | Timestamp when iteration started |
+| | `completed_at` | ISO 8601 string / null | Timestamp when iteration completed |
+| | `status` | string | Lifecycle status: `BOOTSTRAPPED`, `IN_PROGRESS`, `COMPLETED`, `FAILED`, or `CONVERGED` |
+| | `notes` | string (optional) | Human or runner notes (e.g. test leakage notices, reruns) |
+| **`components.<name>`** | `model` | string | Canonical model identifier (e.g. `claude-opus-4-6-thinking`, `gemini-3.7-flash-preview`) |
+| *(author, refiner,* | `model_provider` | string | Provider name: `anthropic`, `google`, `openai`, etc. |
+| *generator, critic)* | `parameters` | object / null | Sampling configuration (`temperature`, `top_p`, `thinking_budget`) |
+| | `timestamps` | object / null | Sub-step `started_at` and `finished_at` ISO 8601 timestamps |
+| | `usage` | object / null | Token counts (`prompt_tokens`, `completion_tokens`, `total_tokens`) |
+| **`results`** | `build` | object / null | Build verification: `status` (`PASS`/`FAIL`), `warnings_count`, `build_time_seconds` |
+| | `equivalence_tests`| object / null | Test harness metrics: `passed`, `failed`, `total`, `pass_rate_pct` |
+| | `generated_code_metrics` | object / null | Codebase scale: `total_lines_of_code`, `source_files_count`, `crates_or_modules_count` |
+
+### JSON Schema & Example
+
+```json
+{
+  "benchmark": "ripgrep",
+  "iteration": 1,
+  "commit_hash": "a5126d1",
+  "created_at": "2026-08-11T20:55:00Z",
+  "completed_at": "2026-08-11T21:05:00Z",
+  "status": "COMPLETED",
+  
+  "components": {
+    "prompt_author": {
+      "model": "model-name",
+      "model_provider": "anthropic|google|openai",
+      "parameters": { "temperature": 0.0 },
+      "timestamps": { "started_at": "...", "finished_at": "..." },
+      "usage": { "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0 }
+    },
+    "prompt_refiner": {
+      "model": "model-name",
+      "model_provider": "anthropic|google|openai",
+      "parameters": { "temperature": 0.0 },
+      "timestamps": { "started_at": "...", "finished_at": "..." },
+      "usage": { "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0 }
+    },
+    "generator": {
+      "model": "model-name",
+      "model_provider": "anthropic|google|openai",
+      "parameters": { "temperature": 0.2 },
+      "timestamps": { "started_at": "...", "finished_at": "..." },
+      "usage": { "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0 }
+    },
+    "verifier_critic": {
+      "model": "model-name",
+      "model_provider": "anthropic|google|openai",
+      "parameters": { "temperature": 0.0 },
+      "timestamps": { "started_at": "...", "finished_at": "..." },
+      "usage": { "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0 }
+    }
+  },
+  
+  "results": {
+    "build": {
+      "status": "PASS",
+      "warnings_count": 0,
+      "build_time_seconds": 0.0
+    },
+    "equivalence_tests": {
+      "passed": 0,
+      "failed": 0,
+      "total": 0,
+      "pass_rate_pct": 0.0
+    },
+    "generated_code_metrics": {
+      "total_lines_of_code": 0,
+      "source_files_count": 0,
+      "crates_or_modules_count": 0
+    }
+  }
+}
+```
+
+*Note: If token usage or specific parameters are not reported by the execution environment, set their values to `null`.*
 
 ---
 
