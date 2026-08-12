@@ -1,0 +1,9 @@
+[package]
+name = "grep-matcher"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "Trait for regular expression matching in grep-like programs."
+
+[dependencies]
+memchr = "2"

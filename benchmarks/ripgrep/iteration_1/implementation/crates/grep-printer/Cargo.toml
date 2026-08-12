@@ -1,0 +1,19 @@
+[package]
+name = "grep-printer"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "Output formatting for grep-like programs."
+
+[dependencies]
+grep-matcher = { path = "../grep-matcher" }
+grep-searcher = { path = "../grep-searcher" }
+bstr = { version = "1", features = ["std"] }
+termcolor = "1"
+log = "0.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+
+[dev-dependencies]
+memchr = "2"

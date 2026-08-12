@@ -1,0 +1,12 @@
+[package]
+name = "globset"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "Cross-platform glob matching with multiple pattern support."
+
+[dependencies]
+regex-automata = { version = "0.4", default-features = false, features = ["std", "meta", "nfa", "hybrid"] }
+regex-syntax = "0.8"
+bstr = "1"
+log = "0.4"
