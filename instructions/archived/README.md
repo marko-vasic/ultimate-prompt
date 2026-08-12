@@ -6,11 +6,23 @@ This directory preserves earlier iterations of the **Ultimate Prompt** instructi
 
 ## Evolution Timeline
 
-```mermaid
-flowchart TD
-    V1["v1: Monolithic Instructions<br/>(ULTIMATE_PROMPT_INSTRUCTIONS.md)"]
-    -->|"Split into Coordinator + Generator (2-agent model)"| V2["v2: Coordinator Architecture<br/>(COORDINATOR_INSTRUCTIONS.md)"]
-    -->|"Split into specialized 4-component loop"| V3["v3: Modern Architecture (Current)<br/>Orchestrator, Author, Generator, Verifier/Critic, Refiner"]
+```
+┌─────────────────────────────────────────────────────────────┐
+│  v1: Monolithic Instructions                                │
+│  (ULTIMATE_PROMPT_INSTRUCTIONS.md)                          │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼ Split into Coordinator + Generator (2-agent model)
+┌──────────────────────────────┴──────────────────────────────┐
+│  v2: Coordinator Architecture                               │
+│  (COORDINATOR_INSTRUCTIONS.md)                              │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼ Split into specialized 4-component loop
+┌──────────────────────────────┴──────────────────────────────┐
+│  v3: Modern Architecture (Current)                          │
+│  Orchestrator, Author, Generator, Verifier/Critic, Refiner  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
