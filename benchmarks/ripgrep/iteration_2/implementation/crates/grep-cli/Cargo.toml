@@ -1,0 +1,10 @@
+[package]
+name = "grep-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bstr = { workspace = true }
+libc = { workspace = true }
+log = { workspace = true }
+termcolor = { workspace = true }

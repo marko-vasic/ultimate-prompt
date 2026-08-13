@@ -1,0 +1,12 @@
+[package]
+name = "ignore"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+globset = { workspace = true }
+log = { workspace = true }
+memchr = { workspace = true }
+regex = { workspace = true }
+walkdir = { workspace = true }
+crossbeam-channel = { workspace = true }

@@ -1,0 +1,12 @@
+[package]
+name = "grep-regex"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+grep-matcher = { workspace = true }
+regex = { workspace = true }
+regex-automata = { workspace = true }
+regex-syntax = { workspace = true }
+log = { workspace = true }
+bstr = { workspace = true }

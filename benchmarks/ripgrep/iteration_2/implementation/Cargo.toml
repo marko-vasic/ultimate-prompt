@@ -1,0 +1,88 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/globset",
+  "crates/grep-matcher",
+  "crates/grep-regex",
+  "crates/grep-searcher",
+  "crates/grep-printer",
+  "crates/grep-cli",
+  "crates/ignore",
+]
+
+[workspace.dependencies]
+globset = { path = "crates/globset" }
+grep-matcher = { path = "crates/grep-matcher" }
+grep-regex = { path = "crates/grep-regex" }
+grep-searcher = { path = "crates/grep-searcher" }
+grep-printer = { path = "crates/grep-printer" }
+grep-cli = { path = "crates/grep-cli" }
+ignore = { path = "crates/ignore" }
+
+anyhow = "1"
+bstr = "1"
+clap = { version = "4", features = ["derive", "wrap_help"] }
+crossbeam-channel = "0.5"
+encoding_rs = "0.8"
+encoding_rs_io = "0.1"
+env_logger = "0.11"
+globset_crate = { package = "globset", version = "0.4" }
+jemalloc-ctl = "0.5"
+jemallocator = "0.5"
+libc = "0.2"
+log = "0.4"
+memchr = "2"
+memmap2 = "0.9"
+regex = "1"
+regex-automata = "0.4"
+regex-syntax = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+termcolor = "1"
+textwrap = "0.16"
+walkdir = "2"
+
+[package]
+name = "ripgrep"
+version = "14.1.1"
+edition = "2021"
+rust-version = "1.77"
+default-run = "rg"
+
+[[bin]]
+name = "rg"
+path = "src/main.rs"
+
+[features]
+default = []
+pcre2 = []
+
+[dependencies]
+anyhow = { workspace = true }
+bstr = { workspace = true }
+clap = { workspace = true }
+clap_complete = "4"
+clap_mangen = "0.2"
+crossbeam-channel = { workspace = true }
+encoding_rs = { workspace = true }
+env_logger = { workspace = true }
+globset = { workspace = true }
+grep-matcher = { workspace = true }
+grep-regex = { workspace = true }
+grep-searcher = { workspace = true }
+grep-printer = { workspace = true }
+grep-cli = { workspace = true }
+ignore = { workspace = true }
+log = { workspace = true }
+memchr = { workspace = true }
+memmap2 = { workspace = true }
+serde_json = { workspace = true }
+termcolor = { workspace = true }
+textwrap = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3"
+walkdir = { workspace = true }
+
+[build-dependencies]
+# none needed for now

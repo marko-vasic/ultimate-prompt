@@ -1,0 +1,13 @@
+[package]
+name = "grep-searcher"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+grep-matcher = { workspace = true }
+encoding_rs = { workspace = true }
+encoding_rs_io = { workspace = true }
+log = { workspace = true }
+memchr = { workspace = true }
+memmap2 = { workspace = true }
+bstr = { workspace = true }

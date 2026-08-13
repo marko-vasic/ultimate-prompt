@@ -19,7 +19,14 @@
       },
       "usage": null
     },
-    "generator": null,
+    "generator": {
+      "model": "claude-opus-4-6, gemini-3.7-flash-preview",
+      "model_provider": "anthropic, google",
+      "parameters": null,
+      "timestamps": null,
+      "usage": null,
+      "notes": "Primarily generated with Claude Opus 4.6; switched to Gemini 3.7 Flash Preview after quota was exhausted."
+    },
     "verifier_critic": null
   },
 
