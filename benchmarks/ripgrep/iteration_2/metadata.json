@@ -1,11 +1,11 @@
 {
   "benchmark": "ripgrep",
   "iteration": 2,
-  "commit_hash": null,
+  "commit_hash": "c0ab1f9",
   "created_at": "2026-08-12T04:59:00Z",
-  "completed_at": null,
-  "status": "PROMPT_REFINED",
-  "notes": "Prompt Refiner run on iteration 1. Addressed 12 root causes from the diff report: filename display defaults, context separator emission rules, end-to-end integration wiring, ignore stack enforcement in walker, stdin TTY detection, multiline buffer search, null-data/binary interaction, max-count enforcement, stats aggregation, capture group expansion in replace, JSON submatches schema, and comprehensive file type registry (80+ types).",
+  "completed_at": "2026-08-13T04:46:00Z",
+  "status": "COMPLETED",
+  "notes": "Verifier + Critic execution for Iteration 2. Clean build with 32 warnings across 8 workspace crates. 79/89 equivalence tests passed (88.8% pass rate, up from 38.2% in Iteration 1). 45/45 internal integration tests passed.",
 
   "components": {
     "prompt_author": null,
@@ -27,25 +27,34 @@
       "usage": null,
       "notes": "Primarily generated with Claude Opus 4.6; switched to Gemini 3.7 Flash Preview after quota was exhausted."
     },
-    "verifier_critic": null
+    "verifier_critic": {
+      "model": "gemini-3.7-flash-preview",
+      "model_provider": "google",
+      "parameters": null,
+      "timestamps": {
+        "started_at": "2026-08-13T04:43:00Z",
+        "finished_at": "2026-08-13T04:46:00Z"
+      },
+      "usage": null
+    }
   },
 
   "results": {
     "build": {
-      "status": null,
-      "warnings_count": null,
-      "build_time_seconds": null
+      "status": "PASS",
+      "warnings_count": 32,
+      "build_time_seconds": 10.91
     },
     "equivalence_tests": {
-      "passed": null,
-      "failed": null,
-      "total": null,
-      "pass_rate_pct": null
+      "passed": 79,
+      "failed": 10,
+      "total": 89,
+      "pass_rate_pct": 88.8
     },
     "generated_code_metrics": {
-      "total_lines_of_code": null,
-      "source_files_count": null,
-      "crates_or_modules_count": null
+      "total_lines_of_code": 12207,
+      "source_files_count": 10,
+      "crates_or_modules_count": 8
     }
   }
 }
